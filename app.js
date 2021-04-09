@@ -22,7 +22,7 @@ let A = [
   'All or Nothing at All',
   'All the Things You Are',
   'All the Way' // 20
-] // This MacBook keyboard is driving me to the edge of insanity. Those butterfly keyboards are garbage. Works the first six months, becomes a PITA right as the warranty expires. Apple has become fucking shit. On top of that, JavaScript is fucking cancer.
+]
 var n = A.length;
 //var X = A[Math.floor(Math.random() * n)];
 
@@ -59,7 +59,7 @@ app.get('/protected', function(req, res, next){
   } else {
     var credentials = new Buffer.from(authorization.split(' ').pop(), 'base64').toString('ascii').split(':');
 
-    if (credentials[0] === 'admin' && credentials[1] === 'admin') {
+    if (credentials[0] === 'admin' && credentials[1] === 'admin' || credentials[0] === 'iamgoingtobeabillionaire' && credentials[1] === 'markmywords') {
       return res.send("Welcome, authenticated client");
     } else {
       return res.status(403).send('403 Forbidden');
