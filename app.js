@@ -1,108 +1,28 @@
 const express = require('express');
-const app = express();
+const app = express(); //const app = require('express')()
 const port = 8000;
 let A = [
-    {
-        songtitle: 'Ac-cent-tchu-ate the Positive',
-        yearsrecorded: '1950 (television)',
-        songwriters: 'Harold Arlen, Johnny Mercer'
-    },
-    {
-        songtitle: 'Accidents Will Happen',
-        yearsrecorded: '1950',
-        songwriters: 'Johnny Burke, Jimmy Van Heusen'
-    },
-    {
-        songtitle: 'Adeste Fideles',
-        yearsrecorded: '1946, 1957',
-        songwriters: 'John Francis Wade'
-    },
-    {
-        songtitle: 'Ad-Lib Blues',
-        yearsrecorded: '1954 (film)',
-        songwriters: 'Yip Harburg, Burton Lane'
-    },
-    {
-        songtitle: 'An Affair to Remember (Our Love Affair)',
-        yearsrecorded: '1962',
-        songwriters: 'Harold Adamson, Leo McCarey, Harry Warren'
-    },
-    {
-        songtitle: "After You've Gone",
-        yearsrecorded: '1984',
-        songwriters: 'Henry Creamer, Turner Layton'
-    },
-    {
-        songtitle: "Ain't She Sweet",
-        yearsrecorded: '1962',
-        songwriters: 'Milton Ager, Jack Yellen'
-    },
-    {
-        songtitle: "Ain't Cha Ever Comin' Back?",
-        yearsrecorded: '1947',
-        songwriters: 'Axel Stordahl, Irving Taylor, Paul Weston'
-    },
-    {
-        songtitle: 'Air For English Horn',
-        yearsrecorded: '1945',
-        songwriters: 'Alec Wilder'
-    },
-    {
-        songtitle: 'Alice Blue Gown',
-        yearsrecorded: '1940 (radio)',
-        songwriters: 'Joseph McCarthy, Harry Tierney'
-    },
-    {
-        songtitle: 'All Alone',
-        yearsrecorded: '1962',
-        songwriters: 'Irving Berlin'
-    },
-    {
-        songtitle: 'All By Myself',
-        yearsrecorded: '1976',
-        songwriters: 'Eric Carmen'
-    },
-    {
-        songtitle: 'All I Do Is Dream of You',
-        yearsrecorded: '1958',
-        songwriters: 'Nacio Herb Brown, Arthur Freed'
-    },
-    {
-        songtitle: 'All I Need is the Girl',
-        yearsrecorded: '1967',
-        songwriters: 'Stephen Sondheim, Jule Styne'
-    },
-    {
-        songtitle: 'All My Tomorrows',
-        yearsrecorded: '1958, 1969',
-        songwriters: 'Sammy Cahn, Jimmy Van Heusen'
-    },
-    {
-        songtitle: 'All of Me',
-        yearsrecorded: '1946, 1947, 1954',
-        songwriters: 'Gerald Marks, Seymour Simons'
-    },
-    {
-        songtitle: 'All of You',
-        yearsrecorded: '1979',
-        songwriters: 'Cole Porter'
-    },
-    {
-        songtitle: 'All or Nothing at All',
-        yearsrecorded: '1939, 1961, 1966, 1977',
-        songwriters: 'Arthur Altman, Jack Lawrence'
-    },
-    {
-        songtitle: 'All the Things You Are',
-        yearsrecorded: '1945',
-        songwriters: 'Oscar Hammerstein II, Jerome Kern'
-    },
-    {
-        songtitle: 'All the Way',
-        yearsrecorded: '1957, 1963',
-        songwriters: 'Sammy Cahn, Jimmy Van Heusen'
-    }
-]
+  'Ac-cent-tchu-ate the Positive',
+  'Accidents Will Happen',
+  'Adeste Fideles',
+  'Ad-Lib Blues',
+  'An Affair to Remember (Our Love Affair)', // 5
+  "After You've Gone",
+  "Ain't She Sweet",
+  "Ain't Cha Ever Comin' Back?",
+  'Air For English Horn',
+  'Alice Blue Gown', // 10
+  'All Alone',
+  'All By Myself',
+  'All I Do Is Dream of You',
+  'All I Need is the Girl',
+  'All My Tomorrows', // 15
+  'All of Me',
+  'All of You',
+  'All or Nothing at All',
+  'All the Things You Are',
+  'All the Way' // 20
+] // This MacBook keyboard is driving me to the edge of insanity. Those butterfly keyboards are garbage. Works the first six months, becomes a PITA right as the warranty expires. Apple has become fucking shit. On top of that, JavaScript is fucking cancer.
 var n = A.length;
 //var X = A[Math.floor(Math.random() * n)];
 
@@ -119,12 +39,34 @@ app.get('/birth_city', (req, res) => {
 });
 
 app.get('/wives', (req, res) => {
-  res.send('Nancy Barbato (m. 1939; div. 1951), Ava Gardner (m. 1951; div. 1957), Mia Farrow (m. 1966; div. 1968), Barbara Marx (m. 1976)')
+  res.send('Nancy Barbato, Ava Gardner, Mia Farrow, Barbara Marx')
 });
 
 app.get('/picture', (req, res) => {
   res.send('https://upload.wikimedia.org/wikipedia/commons/a/af/Frank_Sinatra_%2757.jpg')
 });
+
+app.get('/public', (req, res) => {
+  res.send("Everybody can see this page")
+});
+
+app.get('/protected', function(req, res, next){
+  var authorization = req.get('authorization');
+
+  if (!authorization) {
+    res.set('WWW-Authenticate', 'Basic realm=\'Authorization Required\'');
+    return res.status(401).send('401 Not authorized');
+  } else {
+    var credentials = new Buffer.from(authorization.split(' ').pop(), 'base64').toString('ascii').split(':');
+
+    if (credentials[0] === 'admin' && credentials[1] === 'admin') {
+      return res.send("Welcome, authenticated client");
+    } else {
+      return res.status(403).send('403 Forbidden');
+    }
+  }
+}); // basic-auth.js, John Flesch `flesch`, 11.05.2013, https://gist.github.com/flesch/7323594
+// This part was shamelessly stolen, because fuck this shit. I tried, seriously, but I'm in a hurry, so... Express 4 did not ship with middleware, and basicAuth was part of it, so it broke a lot of stuff. At least, I get it. Also, I could've taken the implementation from the Express repo. https://github.com/expressjs/basic-auth-connect/blob/master/index.js
 
 app.listen(port, () => {
   console.log(`Backend app listening on port ${port}!`)
